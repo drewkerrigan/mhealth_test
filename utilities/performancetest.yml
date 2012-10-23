@@ -1,0 +1,9 @@
+infile: 'users.txt'
+outfile: 'stats.txt'
+max_window_users: 100
+window_size: 10
+total_time: 10
+measure_reads: 1
+measure_writes: 1
+operations: ['login','dashboard','settings','writemeasures','readmeasures']
+workers: 5
