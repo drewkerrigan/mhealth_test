@@ -74,40 +74,75 @@ function settings() {
 }
 
 function writemeasure() {
-    weight=$[ ( $RANDOM % 200 )  + 100 ]
-    ts=$(date +"%Y%m%d%H%M")
-    current_data='[{"name":"Weight","value":"WEIGHT","unit":"lb","timestamp":"TIMESTAMP"}]'
-    current_data=${current_data/$weightconstant/$weight}
-    current_data=${current_data/$timestampconstant/$ts}
-    current_result="$current_data"
-    current_path="APIHOSTv2/health/source/foobar_app/data?oauth_token=AUTHTOKEN" ; post
+    for (( i=1; i <= $mwrites; i++ ))
+    do
+        weight=$[ ( $RANDOM % 200 )  + 100 ]
+        ts=$(date +"%Y%m%d%H%M")
+        current_data='[{"name":"Weight","value":"WEIGHT","unit":"lb","timestamp":"TIMESTAMP"}]'
+        current_data=${current_data/$weightconstant/$weight}
+        current_data=${current_data/$timestampconstant/$ts}
+        current_result="$current_data"
+        current_path="APIHOSTv2/health/source/foobar_app/data?oauth_token=AUTHTOKEN" ; post
+    done
 }
 
 function readmeasure() {
-    current_path="APIHOSTv2/health/data/mass?accept=jsonp&oauth_token=AUTHTOKEN" ; get
+    for (( i=1; i <= $mreads; i++ ))
+    do
+        current_path="APIHOSTv2/health/data/mass?accept=jsonp&oauth_token=AUTHTOKEN" ; get
+    done
 }
 
+function header_all() { echo "elapsed,session,login,dashboard,settings,writemeasure,readmeasure" >> $results_dir/stats.txt ; }
 function op_all() {
-    login
-    dashboard
-    settings
-    writemeasure
-    readmeasure
+    login_t=$( { time login > /dev/null; } 2>&1 )
+    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
+    settings_t=$( { time settings > /dev/null; } 2>&1 )
+    writemeasure_t=$( { time writemeasure > /dev/null; } 2>&1 )
+    readmeasure_t=$( { time readmeasure > /dev/null; } 2>&1 )
+
+    ts=$((nowtime - starttime))
+    total=`echo $login_t+$dashboard_t+$settings_t+$writemeasure_t+$readmeasure_t | bc`
+    echo "$ts,$total,$login_t,$dashboard_t,$settings_t,$writemeasure_t,$readmeasure_t" >> $results_dir/stats.txt
 }
 
+function header_login() { echo "elapsed,login" >> $results_dir/stats.txt ; }
 function op_login() {
-    login
+    login_t=$( { time login > /dev/null; } 2>&1 )
+
+    ts=$((nowtime - starttime))
+    echo "$ts,$login_t" >> $results_dir/stats.txt
 }
 
+function header_logindashboard() { echo "elapsed,session,login,dashboard" >> $results_dir/stats.txt ; }
+function op_logindashboard() {
+    login_t=$( { time login > /dev/null; } 2>&1 )
+    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
+
+    ts=$((nowtime - starttime))
+    total=`echo $login_t+$dashboard_t | bc`
+    echo "$ts,$total,$login_t,$dashboard_t" >> $results_dir/stats.txt
+}
+
+function header_nonstandardlogin() { echo "elapsed,session,login,settings,dashboard" >> $results_dir/stats.txt ; }
 function op_nonstandardlogin() {
-    login
-    settings
-    dashboard
+    login_t=$( { time login > /dev/null; } 2>&1 )
+    settings_t=$( { time settings > /dev/null; } 2>&1 )
+    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
+
+    ts=$((nowtime - starttime))
+    total=`echo $login_t+$settings_t+$dashboard_t | bc`
+    echo "$ts,$total,$login_t,$settings_t,$dashboard_t" >> $results_dir/stats.txt
 }
 
+function header_loginreadwrite() { echo "elapsed,session,login,dashboard,writemeasure,readmeasure" >> $results_dir/stats.txt ; }
 function op_loginreadwrite() {
-    login
-    dashboard
-    writemeasure
-    readmeasure
+    login_t=$( { time login > /dev/null; } 2>&1 )
+    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
+    writemeasure_t=$( { time writemeasure > /dev/null; } 2>&1 )
+    readmeasure_t=$( { time readmeasure > /dev/null; } 2>&1 )
+
+    ts=$((nowtime - starttime))
+    total=`echo $login_t+$dashboard_t+$writemeasure_t+$readmeasure_t | bc`
+    echo "$ts,$total,$login_t,$dashboard_t,$writemeasure_t,$readmeasure_t" >> $results_dir/stats.txt
 }

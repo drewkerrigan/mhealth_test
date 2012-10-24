@@ -3,7 +3,7 @@ riakhost="http://localhost:8098/"
 apihost="http://localhost:9292/"
 
 inputfile="users.txt"
-mwrites=10
+mwrites=0
 mreads=1
 
 #Constants
