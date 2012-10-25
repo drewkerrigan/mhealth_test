@@ -9,7 +9,7 @@ Run a mhealth benchmarking test given an options.
 
 usage : $1 -c <config file> -t <time> -w <workers> [-d]
 
-example usage : $1 -c mhealth_test.cfg -t 60 -w 1 -o login
+example usage : $1 -c mhealth_test.cfg -t 60 -w 1
 		
 -c <config: location of config file> 
 -t <time: (in seconds) 30 | 60 | 120>

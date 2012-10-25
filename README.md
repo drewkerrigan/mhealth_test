@@ -7,7 +7,7 @@ A bash based driver for simple mhealth benchmarking tests.
 
 ./mhealth_test.sh -c (config file) -t (time) -w (workers) [-d]
 
-example usage : ./mhealth_test.sh -c mhealth_test.cfg -t 60 -w 1 -o login
+example usage : ./mhealth_test.sh -c mhealth_test.cfg -t 60 -w 1
                 
 ## Options
 
