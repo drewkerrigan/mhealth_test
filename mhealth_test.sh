@@ -9,19 +9,17 @@ CONFIG=""
 DEBUG=""
 TIME=""
 WORKERS=""
-OPERATION=""
 RESULTSDIR=""
 WORKERID=0
 
 #----------------------------------------------------------------------
 # populate values from command line options and validate
 #----------------------------------------------------------------------
-while getopts ":c:t:w:o:r:i:d" opt; do
+while getopts ":c:t:w:r:i:d" opt; do
   case $opt in
     c) CONFIG="${OPTARG}";;
     t) TIME="${OPTARG}";;
     w) WORKERS="${OPTARG}";;
-    o) OPERATION="${OPTARG}";;
     r) RESULTSDIR="${OPTARG}";;
 	i) WORKERID=${OPTARG};;
     d) DEBUG=TRUE;;
@@ -30,8 +28,7 @@ done
 
 if [ "$CONFIG" == "" ] || 
    [ "$TIME" == "" ] ||
-   [ "$WORKERS" == "" ] ||
-   [ "$OPERATION" == "" ]
+   [ "$WORKERS" == "" ]
 then
 	print_usage $0
 	exit 1
@@ -41,7 +38,6 @@ duration=$TIME
 
 print_debug "time= $duration seconds"
 print_debug "number of workers= $WORKERS"
-print_debug "operation= $OPERATION"
 
 #----------------------------------------------------------------------
 # include / create required files
@@ -51,8 +47,8 @@ source $(dirname $0)/lib/driver.sh
 
 if [ "$RESULTSDIR" == "" ]
 then
-	results_dir="./results/$TIME-s-$WORKERS-wr-$OPERATION"
-	header_$OPERATION
+	results_dir="./results/$TIME-s-$WORKERS-wr-$ops"
+	header
 else
 	results_dir="$RESULTSDIR"
 fi
@@ -80,6 +76,7 @@ fi
 if [ -e "$results_dir/stats.txt" ] && [ "$RESULTSDIR" == "" ]
 then
 	mv $results_dir/stats.txt{,.bak}
+	header
 fi
 
 #----------------------------------------------------------------------
@@ -96,12 +93,12 @@ then
 	d=""
 	if [ "$DEBUG" == TRUE ]; then d="-d"; fi
 	
-	header_$OPERATION
+	header
 
 	for (( i=1; i<=$WORKERS; i++ ))
 	do
 		print_debug "Starting worker $i"
-		$0 -c $CONFIG -t $TIME -w 1 -o $OPERATION -r $results_dir -i $i $d &> $results_dir/worker_output$i.txt & 
+		$0 -c $CONFIG -t $TIME -w 1 -r $results_dir -i $i $d &> $results_dir/worker_output$i.txt & 
 	done
 	
 	echo "Check $results_dir/stats.txt for performance results"
@@ -121,6 +118,8 @@ fi
 #----------------------------------------------------------------------
 # run the test
 #----------------------------------------------------------------------
+init_ops
+
 #offset
 sleep $WORKERID
 
@@ -142,7 +141,7 @@ do
 		timeleft=$((endtime - nowtime))
 		echo -ne "    Time Left: $timeleft seconds\r"
 		
-		op_$OPERATION
+		op_run
 		if [ "$DEBUG" == TRUE ]; then break; fi
 	done < ./$inputfile
 done

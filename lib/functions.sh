@@ -7,14 +7,13 @@ function print_usage() {
 cat <<- EOT
 Run a mhealth benchmarking test given an options.
 
-usage : $1 -c <config file> -t <time> -w <workers> -o <operation> [-d]
+usage : $1 -c <config file> -t <time> -w <workers> [-d]
 
 example usage : $1 -c mhealth_test.cfg -t 60 -w 1 -o login
 		
 -c <config: location of config file> 
 -t <time: (in seconds) 30 | 60 | 120>
 -w <workers: 1 | 10 | 20 | 100>
--o <operation: all | login | nonstandardlogin | loginreadwrite>
 -d (debug, prints diagnostic information)
 EOT
 }

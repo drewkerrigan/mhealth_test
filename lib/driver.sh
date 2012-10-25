@@ -9,6 +9,12 @@ current_result=""
 current_path=""
 current_data=""
 
+do_login=FALSE
+do_dashboard=FALSE
+do_settings=FALSE
+do_writemeasure=FALSE
+do_readmeasure=FALSE
+
 function prepare() {
     current_path=${current_path/$emailconstant/$current_email}
     current_path=${current_path/$uidconstant/$current_uid}
@@ -93,56 +99,58 @@ function readmeasure() {
     done
 }
 
-function header_all() { echo "elapsed,session,login,dashboard,settings,writemeasure,readmeasure" >> $results_dir/stats.txt ; }
-function op_all() {
-    login_t=$( { time login > /dev/null; } 2>&1 )
-    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
-    settings_t=$( { time settings > /dev/null; } 2>&1 )
-    writemeasure_t=$( { time writemeasure > /dev/null; } 2>&1 )
-    readmeasure_t=$( { time readmeasure > /dev/null; } 2>&1 )
-
-    ts=$((nowtime - starttime))
-    total=`echo $login_t+$dashboard_t+$settings_t+$writemeasure_t+$readmeasure_t | bc`
-    echo "$ts,$total,$login_t,$dashboard_t,$settings_t,$writemeasure_t,$readmeasure_t" >> $results_dir/stats.txt
+function init_ops() {
+    if [[ "$ops" == *login* ]] ; then do_login=TRUE; fi
+    if [[ "$ops" == *dashboard* ]] ; then do_dashboard=TRUE; fi
+    if [[ "$ops" == *settings* ]] ; then do_settings=TRUE; fi
+    if [[ "$ops" == *writemeasure* ]] ; then do_writemeasure=TRUE; fi
+    if [[ "$ops" == *readmeasure* ]] ; then do_readmeasure=TRUE; fi
 }
 
-function header_login() { echo "elapsed,login" >> $results_dir/stats.txt ; }
-function op_login() {
-    login_t=$( { time login > /dev/null; } 2>&1 )
-
-    ts=$((nowtime - starttime))
-    echo "$ts,$login_t" >> $results_dir/stats.txt
+function header() {
+    header="worker,elapsed,session,$ops"
+    echo $header >> $results_dir/stats.txt
 }
 
-function header_logindashboard() { echo "elapsed,session,login,dashboard" >> $results_dir/stats.txt ; }
-function op_logindashboard() {
-    login_t=$( { time login > /dev/null; } 2>&1 )
-    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
+function op_run() {
+    total=0
+    list=""
+
+    if [ "$do_login" == TRUE ]
+    then 
+        op_t=$( { time login > /dev/null; } 2>&1 )
+        list=$list",$op_t"
+        total=`echo $total+$op_t | bc`
+    fi
+
+    if [ "$do_dashboard" == TRUE ]
+    then 
+        op_t=$( { time dashboard > /dev/null; } 2>&1 )
+        list=$list",$op_t"
+        total=`echo $total+$op_t | bc`
+    fi
+
+    if [ "$do_settings" == TRUE ]
+    then 
+        op_t=$( { time settings > /dev/null; } 2>&1 )
+        list=$list",$op_t"
+        total=`echo $total+$op_t | bc`
+    fi
+
+    if [ "$do_writemeasure" == TRUE ]
+    then 
+        op_t=$( { time writemeasure > /dev/null; } 2>&1 )
+        list=$list",$op_t"
+        total=`echo $total+$op_t | bc`
+    fi
+
+    if [ "$do_readmeasure" == TRUE ]
+    then 
+        op_t=$( { time readmeasure > /dev/null; } 2>&1 )
+        list=$list",$op_t"
+        total=`echo $total+$op_t | bc`
+    fi
 
     ts=$((nowtime - starttime))
-    total=`echo $login_t+$dashboard_t | bc`
-    echo "$ts,$total,$login_t,$dashboard_t" >> $results_dir/stats.txt
-}
-
-function header_nonstandardlogin() { echo "elapsed,session,login,settings,dashboard" >> $results_dir/stats.txt ; }
-function op_nonstandardlogin() {
-    login_t=$( { time login > /dev/null; } 2>&1 )
-    settings_t=$( { time settings > /dev/null; } 2>&1 )
-    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
-
-    ts=$((nowtime - starttime))
-    total=`echo $login_t+$settings_t+$dashboard_t | bc`
-    echo "$ts,$total,$login_t,$settings_t,$dashboard_t" >> $results_dir/stats.txt
-}
-
-function header_loginreadwrite() { echo "elapsed,session,login,dashboard,writemeasure,readmeasure" >> $results_dir/stats.txt ; }
-function op_loginreadwrite() {
-    login_t=$( { time login > /dev/null; } 2>&1 )
-    dashboard_t=$( { time dashboard > /dev/null; } 2>&1 )
-    writemeasure_t=$( { time writemeasure > /dev/null; } 2>&1 )
-    readmeasure_t=$( { time readmeasure > /dev/null; } 2>&1 )
-
-    ts=$((nowtime - starttime))
-    total=`echo $login_t+$dashboard_t+$writemeasure_t+$readmeasure_t | bc`
-    echo "$ts,$total,$login_t,$dashboard_t,$writemeasure_t,$readmeasure_t" >> $results_dir/stats.txt
+    echo "$WORKERID,$ts,$total$list" >> $results_dir/stats.txt
 }

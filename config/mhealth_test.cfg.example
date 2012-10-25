@@ -3,6 +3,7 @@ riakhost="http://localhost:8098/"
 apihost="http://localhost:9292/"
 
 inputfile="users.txt"
+ops="login,dashboard,settings,writemeasure,readmeasure"
 mwrites=0
 mreads=1
 
