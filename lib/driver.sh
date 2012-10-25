@@ -9,12 +9,6 @@ current_result=""
 current_path=""
 current_data=""
 
-do_login=FALSE
-do_dashboard=FALSE
-do_settings=FALSE
-do_writemeasure=FALSE
-do_readmeasure=FALSE
-
 function prepare() {
     current_path=${current_path/$emailconstant/$current_email}
     current_path=${current_path/$uidconstant/$current_uid}
@@ -99,14 +93,6 @@ function readmeasure() {
     done
 }
 
-function init_ops() {
-    if [[ "$ops" == *login* ]] ; then do_login=TRUE; fi
-    if [[ "$ops" == *dashboard* ]] ; then do_dashboard=TRUE; fi
-    if [[ "$ops" == *settings* ]] ; then do_settings=TRUE; fi
-    if [[ "$ops" == *writemeasure* ]] ; then do_writemeasure=TRUE; fi
-    if [[ "$ops" == *readmeasure* ]] ; then do_readmeasure=TRUE; fi
-}
-
 function header() {
     header="worker,elapsed,session,$ops"
     echo $header >> $results_dir/stats.txt
@@ -116,40 +102,15 @@ function op_run() {
     total=0
     list=""
 
-    if [ "$do_login" == TRUE ]
-    then 
-        op_t=$( { time login > /dev/null; } 2>&1 )
-        list=$list",$op_t"
-        total=`echo $total+$op_t | bc`
-    fi
-
-    if [ "$do_dashboard" == TRUE ]
-    then 
-        op_t=$( { time dashboard > /dev/null; } 2>&1 )
-        list=$list",$op_t"
-        total=`echo $total+$op_t | bc`
-    fi
-
-    if [ "$do_settings" == TRUE ]
-    then 
-        op_t=$( { time settings > /dev/null; } 2>&1 )
-        list=$list",$op_t"
-        total=`echo $total+$op_t | bc`
-    fi
-
-    if [ "$do_writemeasure" == TRUE ]
-    then 
-        op_t=$( { time writemeasure > /dev/null; } 2>&1 )
-        list=$list",$op_t"
-        total=`echo $total+$op_t | bc`
-    fi
-
-    if [ "$do_readmeasure" == TRUE ]
-    then 
-        op_t=$( { time readmeasure > /dev/null; } 2>&1 )
-        list=$list",$op_t"
-        total=`echo $total+$op_t | bc`
-    fi
+    for operation in login dashboard settings writemeasure readmeasure
+    do
+        if [[ "$ops" == *$operation* ]]
+        then 
+            op_t=$( { time $operation > /dev/null; } 2>&1 )
+            list=$list",$op_t"
+            total=`echo $total+$op_t | bc`
+        fi
+    done
 
     ts=$((nowtime - starttime))
     echo "$WORKERID,$ts,$total$list" >> $results_dir/stats.txt
