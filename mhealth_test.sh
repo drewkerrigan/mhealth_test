@@ -47,8 +47,7 @@ source $(dirname $0)/lib/driver.sh
 
 if [ "$RESULTSDIR" == "" ]
 then
-	results_dir="./results/$TIME-s-$WORKERS-wr-$ops"
-	header
+	results_dir="./results/$TIME-s-$WORKERS-wr-$ops"	
 else
 	results_dir="$RESULTSDIR"
 fi
@@ -76,8 +75,9 @@ fi
 if [ -e "$results_dir/stats.txt" ] && [ "$RESULTSDIR" == "" ]
 then
 	mv $results_dir/stats.txt{,.bak}
-	header
 fi
+
+if [ "$RESULTSDIR" == "" ] ; then header ; fi
 
 #----------------------------------------------------------------------
 # spawn worker threads if there is more than one

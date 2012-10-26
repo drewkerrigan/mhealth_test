@@ -40,6 +40,10 @@ function custom_data() {
     current_result="$current_path"
 }
 
+function riak_stats() {
+    current_path="RIAKHOSTstats" ; get
+    echo $current_result >> $results_dir/riak_stats.txt
+}
 
 function login() {
     current_path="RIAKHOSTbuckets/NAMESPACEusers/index/email_bin/USEREMAIL" ; get
