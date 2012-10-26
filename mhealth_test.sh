@@ -75,9 +75,11 @@ fi
 if [ -e "$results_dir/stats.txt" ] && [ "$RESULTSDIR" == "" ]
 then
 	mv $results_dir/stats.txt{,.bak}
+	mv $results_dir/riak_stats.txt{,.bak}
+	mv $results_dir/riak_key_counts.txt{,.bak}
 fi
 
-if [ "$RESULTSDIR" == "" ] ; then header ; fi
+if [ "$RESULTSDIR" == "" ] ; then header ; riak_keycounts TRUE ; riak_stats ; fi
 
 #----------------------------------------------------------------------
 # spawn worker threads if there is more than one
@@ -94,6 +96,8 @@ then
 	if [ "$DEBUG" == TRUE ]; then d="-d"; fi
 	
 	header
+	riak_keycounts TRUE
+	riak_stats
 
 	for (( i=1; i<=$WORKERS; i++ ))
 	do
@@ -143,6 +147,9 @@ do
 		if [ "$DEBUG" == TRUE ]; then break; fi
 	done < ./$inputfile
 done
+
+riak_keycounts
+riak_stats
 
 echo "    Time Left: 0 seconds, done!"
 echo "Check $results_dir/stats.txt for performance results"

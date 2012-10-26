@@ -1,6 +1,8 @@
 namespace="local_ns~"
 riakhost="http://localhost:8098/"
 apihost="http://localhost:9292/"
+riakbase="localhost"
+riakport="8098"
 
 inputfile="users.txt"
 ops="login,dashboard,settings,writemeasure,readmeasure"
