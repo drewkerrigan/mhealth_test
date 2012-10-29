@@ -3,7 +3,7 @@ mhealth_test
 
 A bash based driver for simple mhealth benchmarking tests.
 
-## Prequisites
+## Prerequisites
 
 sudo npm install riak-js@latest
 
