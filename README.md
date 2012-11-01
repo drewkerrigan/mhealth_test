@@ -23,10 +23,12 @@ example usage : ./mhealth_test.sh -c mhealth_test.cfg -t 60 -w 1
 ## Test Deployment Steps
 
 Check out the project and set it up
-* cd
-* git clone git://github.com/drewkerrigan/mhealth_test.git
-* cd mhealth_test
-* npm install riak-js@latest
+#+BEGIN_SRC shell
+cd
+git clone git://github.com/drewkerrigan/mhealth_test.git
+cd mhealth_test
+npm install riak-js@latest
+#+END_SRC
 
 Set up performancetest.rake in the mHealth portal application
 * cd /usr/local/src/mhealth
