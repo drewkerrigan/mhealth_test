@@ -175,9 +175,15 @@ namespace :db do
 
       source = Att::API::Internal::Source.new(Server.setting(:api_uri), user.id, application.name)
 
+      measure_arr = Array.new
+
       for m in 1..args.nmeasures.to_i
-        source.write([{:name => 'Weight', :value => 100+Random.rand(101), :unit => 'lb', :timestamp => Time.now.strftime("%Y%m%d%H%M")}])
+        t = Time.now - (86400 * m)
+        measure_arr.push({:name => 'Weight', :value => 100+Random.rand(101), :unit => 'lb', :timestamp => t.strftime("%Y%m%d%H%M")})
       end
+
+      pp measure_arr
+      source.write(measure_arr)
 
       file.write(user.email + "|" + user.id + "|" + user.full_name + "|" + auth_token + "\n")
     end
