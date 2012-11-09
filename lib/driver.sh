@@ -107,7 +107,7 @@ function writemeasure() {
     for (( i=1; i <= $mwrites; i++ ))
     do
         weight=$[ ( $RANDOM % 200 )  + 100 ]
-        ts=$(date +"%Y%m%d%H%M")
+        ts=$(date --date="10 days ago" +"%Y%m%d%H%M")
         current_data='[{"name":"Weight","value":"WEIGHT","unit":"lb","timestamp":"TIMESTAMP"}]'
         current_data=${current_data/$weightconstant/$weight}
         current_data=${current_data/$timestampconstant/$ts}
