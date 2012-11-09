@@ -123,7 +123,7 @@ fi
 # run the test
 #----------------------------------------------------------------------
 #offset
-sleep $WORKERID
+#sleep $WORKERID
 
 nowtime=$(date '+%s')
 starttime=$nowtime
